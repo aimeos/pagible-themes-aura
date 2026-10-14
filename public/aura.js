@@ -1,14 +1,12 @@
 /**
- * Aura Theme - Light/dark switch, scroll reveals, card spotlights, marquee, counters, copy buttons and post outline
+ * Aura Theme - Light/dark switch, search shortcut, card spotlights, copy buttons and post outline
  * @license MIT, https://opensource.org/license/MIT
  */
 
 
 /**
- * Apply the stored color mode and enable scripted styles before the page is rendered
+ * Apply the stored color mode before the page is rendered
  */
-document.documentElement.classList.replace('no-js', 'js');
-
 try {
     const mode = localStorage.getItem('aura-mode');
     mode && document.documentElement.setAttribute('data-theme', mode);
@@ -35,16 +33,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     /**
-     * Condense the floating header after scrolling
-     */
-    const header = document.querySelector('body > header');
-    const condense = () => header?.classList.toggle('scrolled', scrollY > 8);
-
-    addEventListener('scroll', condense, {passive: true});
-    condense();
-
-
-    /**
      * Open search with Ctrl+K, Cmd+K or "/"
      */
     document.addEventListener('keydown', ev => {
@@ -57,44 +45,6 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
     });
-
-
-    /**
-     * Reveal page sections when they scroll into view
-     */
-    const sections = document.querySelectorAll('main > .cms-content > div:not(:first-child)');
-
-    if('IntersectionObserver' in window) {
-        const observer = new IntersectionObserver(entries => {
-            entries.forEach(entry => {
-                if(entry.isIntersecting) {
-                    entry.target.classList.add('in');
-                    observer.unobserve(entry.target);
-                }
-            });
-        }, {rootMargin: '0px 0px -10% 0px'});
-
-        sections.forEach(el => observer.observe(el));
-    } else {
-        sections.forEach(el => el.classList.add('in'));
-    }
-
-
-    /**
-     * Endless marquee for badge cards, items are duplicated for a seamless loop
-     */
-    if(motion) {
-        document.querySelectorAll('main .card-list.layout-badges').forEach(list => {
-            [...list.children].forEach(item => {
-                const clone = item.cloneNode(true);
-
-                clone.setAttribute('aria-hidden', 'true');
-                clone.querySelectorAll('a').forEach(link => link.tabIndex = -1);
-                list.append(clone);
-            });
-            list.classList.add('marquee');
-        });
-    }
 
 
     /**
@@ -112,47 +62,6 @@ document.addEventListener('DOMContentLoaded', () => {
             spot.style.transform = `translate(${ev.clientX - rect.left}px, ${ev.clientY - rect.top}px)`;
         });
     });
-
-
-    /**
-     * Count up the numbers of figure cards when they become visible
-     */
-    if(motion && 'IntersectionObserver' in window) {
-        const counter = new IntersectionObserver(entries => {
-            entries.forEach(entry => {
-                if(!entry.isIntersecting) {
-                    return;
-                }
-
-                const el = entry.target;
-                const [, prefix, number, suffix] = el.dataset.count.match(/^(\D*)([\d.,]+)(.*)$/s);
-                const decimals = (number.split(/[.,]/)[1] || '').length;
-                const sep = number.match(/[.,]/)?.[0] || '.';
-                const target = parseFloat(number.replace(',', '.'));
-                const start = performance.now();
-
-                const step = now => {
-                    const ratio = Math.min(1, (now - start) / 1400);
-                    const value = (target * (1 - Math.pow(1 - ratio, 4))).toFixed(decimals).replace('.', sep);
-
-                    el.textContent = prefix + value + suffix;
-                    ratio < 1 && requestAnimationFrame(step);
-                };
-
-                counter.unobserve(el);
-                requestAnimationFrame(step);
-            });
-        }, {threshold: 0.6});
-
-        document.querySelectorAll('main .card-list.layout-figures .card-item .title').forEach(el => {
-            const text = el.textContent.trim();
-
-            if(/^\D*\d{1,6}([.,]\d{1,2})?\D*$/s.test(text) && !el.querySelector('a')) {
-                el.dataset.count = text;
-                counter.observe(el);
-            }
-        });
-    }
 
 
     /**

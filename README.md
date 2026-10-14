@@ -91,13 +91,14 @@ The demo builds the portfolio of Noa Lindqvist, a fictional design engineer in C
 │   ├── cms.css          Tokens, aurora, header, footer, buttons, reveals, callouts and code boxes
 │   ├── layout-blog.css  Progress bar, post column, outline, author card and pager
 │   ├── list.css         Post rows and cards
-│   ├── aura.js          Mode switch, header, search shortcut, reveals, marquee, spotlights, counters, copy buttons and outline
+│   ├── aura.js          Mode switch, search shortcut, spotlights, copy buttons and outline
 │   ├── i18n/            Admin translations of the config fields
 │   └── *.css            Content element styles
 ├── tests/
 └── views/
     ├── article.blade.php  Post header with date and reading time
     ├── blog.blade.php     Post rows or cards
+    ├── cards.blade.php    Marquee badges and counting figures
     ├── code.blade.php     Code block with copy button
     ├── text.blade.php     Markdown with callouts
     └── layouts/

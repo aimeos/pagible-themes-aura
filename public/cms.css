@@ -344,6 +344,7 @@ body > header {
     z-index: 100;
     top: 0;
     padding: 0.875rem 1rem 0;
+    container-type: scroll-state;
 }
 
 body > header > nav {
@@ -359,9 +360,11 @@ body > header > nav {
     transition: max-width 0.4s cubic-bezier(0.2, 0.7, 0.2, 1), box-shadow 0.3s ease;
 }
 
-body > header.scrolled > nav {
-    max-width: 56rem;
-    box-shadow: 0 1rem 2.5rem -1rem #12111A66;
+@container scroll-state(stuck: top) {
+    body > header > nav {
+        max-width: 56rem;
+        box-shadow: 0 1rem 2.5rem -1rem #12111A66;
+    }
 }
 
 header nav ul,
@@ -946,35 +949,35 @@ kbd {
     margin: auto;
 }
 
-/* Scroll reveal, only when JavaScript runs and motion is allowed */
+/* Scroll reveal, only when scroll-driven animations are supported and motion is allowed */
 
 @media (prefers-reduced-motion: no-preference) {
-    .js main > .cms-content > div:not(:first-child) {
+    @supports (animation-timeline: view()) {
+        main > .cms-content > div:not(:first-child),
+        main > .cms-content > div:not(:first-child) :is(.card-item, .testimonial-item, .step, .list-item) {
+            animation: reveal linear both;
+            animation-timeline: view();
+            animation-range: entry 0 entry 12rem;
+        }
+
+        main > .cms-content > div:not(:first-child) :is(.card-item, .testimonial-item, .step, .list-item) {
+            --rise: 1.25rem;
+        }
+
+        main > .cms-content > div:not(:first-child) :is(.card-item, .testimonial-item, .step, .list-item):nth-child(2) { animation-range: entry 1.5rem entry 13.5rem; }
+        main > .cms-content > div:not(:first-child) :is(.card-item, .testimonial-item, .step, .list-item):nth-child(3) { animation-range: entry 3rem entry 15rem; }
+        main > .cms-content > div:not(:first-child) :is(.card-item, .testimonial-item, .step, .list-item):nth-child(n+4) { animation-range: entry 4.5rem entry 16.5rem; }
+
+        main > .cms-content > div:not(:first-child) .marquee > .card-item {
+            animation: none;
+        }
+    }
+}
+
+@keyframes reveal {
+    from {
         opacity: 0;
-        transform: translateY(2rem);
-        transition: opacity 0.9s cubic-bezier(0.2, 0.7, 0.2, 1), transform 0.9s cubic-bezier(0.2, 0.7, 0.2, 1);
-    }
-
-    .js main > .cms-content > div:not(:first-child) :is(.card-item, .testimonial-item, .step, .list-item) {
-        opacity: 0;
-        transform: translateY(1.25rem);
-        transition: opacity 0.7s cubic-bezier(0.2, 0.7, 0.2, 1), transform 0.7s cubic-bezier(0.2, 0.7, 0.2, 1);
-    }
-
-    .js main > .cms-content > div.in,
-    .js main > .cms-content > div.in :is(.card-item, .testimonial-item, .step, .list-item) {
-        opacity: 1;
-        transform: none;
-    }
-
-    .js main > .cms-content > div.in :is(.card-item, .testimonial-item, .step, .list-item):nth-child(2) { transition-delay: 0.08s; }
-    .js main > .cms-content > div.in :is(.card-item, .testimonial-item, .step, .list-item):nth-child(3) { transition-delay: 0.16s; }
-    .js main > .cms-content > div.in :is(.card-item, .testimonial-item, .step, .list-item):nth-child(4) { transition-delay: 0.24s; }
-    .js main > .cms-content > div.in :is(.card-item, .testimonial-item, .step, .list-item):nth-child(5) { transition-delay: 0.32s; }
-    .js main > .cms-content > div.in :is(.card-item, .testimonial-item, .step, .list-item):nth-child(n+6) { transition-delay: 0.4s; }
-
-    .js main > .cms-content > div.in .marquee > .card-item {
-        transition-delay: 0s;
+        transform: translateY(var(--rise, 2rem));
     }
 }
 
@@ -1150,8 +1153,8 @@ body > footer.bottom .wordmark {
     line-height: 0.8;
     text-align: center;
     white-space: nowrap;
-    -webkit-text-stroke: 1px var(--pico-muted-border-color);
-    background: linear-gradient(180deg, var(--pico-muted-background-color), #00000000 85%);
+    -webkit-text-stroke: 1px color-mix(in srgb, #8B7CFF 45%, #00000000);
+    background: linear-gradient(180deg, color-mix(in srgb, #8B7CFF 28%, #00000000), #00000000 85%);
     -webkit-background-clip: text;
     background-clip: text;
     user-select: none;

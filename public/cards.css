@@ -245,43 +245,50 @@
     display: none;
 }
 
-.cards:has(.marquee) {
-    overflow: hidden;
+.cards .card-list.layout-badges .clone {
+    display: none;
 }
 
-.cards:has(.marquee) .container {
-    -webkit-mask-image: linear-gradient(90deg, #00000000, #000000 1.5rem, #000000 calc(100% - 1.5rem), #00000000);
-    mask-image: linear-gradient(90deg, #00000000, #000000 1.5rem, #000000 calc(100% - 1.5rem), #00000000);
+@media (prefers-reduced-motion: no-preference) {
+    .cards:has(.marquee) {
+        overflow: clip;
+    }
+
+    .cards:has(.marquee) .container {
+        -webkit-mask-image: linear-gradient(90deg, #00000000, #000000 1.5rem, #000000 calc(100% - 1.5rem), #00000000);
+        mask-image: linear-gradient(90deg, #00000000, #000000 1.5rem, #000000 calc(100% - 1.5rem), #00000000);
+    }
+
+    .cards .card-list.layout-badges.marquee {
+        flex-wrap: nowrap;
+        gap: 0;
+        width: max-content;
+        animation: marquee 45s linear infinite;
+    }
+
+    .cards .card-list.layout-badges.marquee:hover {
+        animation-play-state: paused;
+    }
+
+    .cards .card-list.layout-badges.marquee .card-item {
+        display: flex;
+        margin-inline-end: 0.625rem;
+    }
+
+    [dir=rtl] .cards .card-list.layout-badges.marquee {
+        animation-name: marquee-rtl;
+    }
 }
 
-@media screen and (min-width: 768px) {
+@media screen and (min-width: 768px) and (prefers-reduced-motion: no-preference) {
     .cards:has(.marquee) .container {
         -webkit-mask-image: linear-gradient(90deg, #00000000, #000000 6rem, #000000 calc(100% - 6rem), #00000000);
         mask-image: linear-gradient(90deg, #00000000, #000000 6rem, #000000 calc(100% - 6rem), #00000000);
     }
 }
 
-.cards .card-list.layout-badges.marquee {
-    flex-wrap: nowrap;
-    gap: 0;
-    width: max-content;
-    animation: marquee 45s linear infinite;
-}
-
-.cards .card-list.layout-badges.marquee:hover {
-    animation-play-state: paused;
-}
-
-.cards .card-list.layout-badges.marquee .card-item {
-    margin-inline-end: 0.625rem;
-}
-
 @keyframes marquee {
     to { transform: translateX(-50%); }
-}
-
-[dir=rtl] .cards .card-list.layout-badges.marquee {
-    animation-name: marquee-rtl;
 }
 
 @keyframes marquee-rtl {
@@ -310,4 +317,59 @@
     font-variant-numeric: tabular-nums;
     letter-spacing: -0.05em;
     line-height: 1;
+}
+
+/* Figures: count up while scrolling into view, the number is static without support */
+
+@property --count {
+    syntax: '<integer>';
+    inherits: false;
+    initial-value: 0;
+}
+
+.cards .card-list.layout-figures .count {
+    display: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    @supports (animation-timeline: view()) and (width: round(down, 1.5px, 1px)) and (x: attr(x type(*))) {
+        .cards .card-list.layout-figures .card-item {
+            view-timeline: --figure;
+        }
+
+        .cards .card-list.layout-figures .count {
+            --count: attr(data-count type(<integer>));
+            --scale: attr(data-scale type(<integer>));
+            display: inline;
+            counter-reset: int round(down, var(--count) / var(--scale), 1) frac mod(var(--count), var(--scale));
+            animation: count ease-out both;
+            animation-timeline: --figure;
+            animation-range: entry 100% cover 60%;
+        }
+
+        .cards .card-list.layout-figures .count::after {
+            content: attr(data-prefix) counter(int) attr(data-suffix);
+        }
+
+        .cards .card-list.layout-figures .count[data-digits="1"]::after {
+            content: attr(data-prefix) counter(int) attr(data-sep) counter(frac) attr(data-suffix);
+        }
+
+        .cards .card-list.layout-figures .count[data-digits="2"]::after {
+            content: attr(data-prefix) counter(int) attr(data-sep) counter(frac, decimal-leading-zero) attr(data-suffix);
+        }
+
+        .cards .card-list.layout-figures .count + .value {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            overflow: hidden;
+            clip-path: inset(50%);
+            white-space: nowrap;
+        }
+    }
+}
+
+@keyframes count {
+    from { --count: 0; }
 }

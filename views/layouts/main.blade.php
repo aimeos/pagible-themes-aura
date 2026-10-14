@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html class="no-js" lang="{{ cms($page, 'lang') }}" dir="{{ in_array(strtok((string) cms($page, 'lang'), '-_'), ['ar', 'dv', 'fa', 'he', 'ku', 'ur']) ? 'rtl' : 'ltr' }}">
+<html lang="{{ cms($page, 'lang') }}" dir="{{ in_array(strtok((string) cms($page, 'lang'), '-_'), ['ar', 'dv', 'fa', 'he', 'ku', 'ur']) ? 'rtl' : 'ltr' }}">
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">

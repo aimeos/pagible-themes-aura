@@ -64,7 +64,9 @@ class AuraDemoTest extends ThemeTestAbstract
         $response->assertSee( 'Booking projects for 2027' );
         $response->assertSee( 'data-copy="hello@example.com"', false );
         $response->assertSee( 'class="wordmark"', false );
-        $response->assertSee( 'layout-badges', false );
+        $response->assertSee( 'layout-badges marquee', false );
+        $response->assertSee( 'class="card-item clone" inert', false );
+        $response->assertSee( 'data-count="24" data-scale="10" data-prefix="" data-sep="." data-digits="1" data-suffix="M"', false );
         $response->assertSee( 'Halo design system' );
         $response->assertDontSee( 'Orbit motion library' );
         $response->assertSee( 'list-cards', false );
